@@ -5,6 +5,7 @@ __pycache__/
 
 datasets/result/
 csv/
+datasets/resized_images/
 
 # C extensions
 *.so

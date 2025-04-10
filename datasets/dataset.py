@@ -2,15 +2,10 @@ import os
 import csv
 import json
 
-def extract_text_sorted_by_position(annotations):
-    polygons = annotations[0]['polygons']
-    sorted_polygons = sorted(
-        polygons,
-        key=lambda x: (min(p[1] for p in x['points']), min(p[0] for p in x['points']))
-    )
-    return [p['text'] for p in sorted_polygons]  # 리스트 형태 유지
+def extract_text_by_order(annotations):
+    return [j["text"] for i in annotations for j in i["polygons"]]
 
-def generate_csv(annotation_dir, image_dir, output_csv="ocr_dataset.csv"):
+def generate_csv(annotation_dir, image_dir, output_csv="./csv/ocr_dataset.csv"):
     with open(output_csv, mode="w", newline='', encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=["image_path", "query", "label"])
         writer.writeheader()
@@ -26,7 +21,7 @@ def generate_csv(annotation_dir, image_dir, output_csv="ocr_dataset.csv"):
                     if not os.path.exists(image_path):
                         continue
 
-                    text_list = extract_text_sorted_by_position(data["annotations"])
+                    text_list = extract_text_by_order(data["annotations"])
                     instruction = "이미지를 기반으로 금융 문서의 텍스트를 순서대로 인식하고, 문서의 구조를 고려하여 정확히 추출하세요."
 
                     writer.writerow({
@@ -42,5 +37,5 @@ if __name__ == "__main__":
     generate_csv(
         annotation_dir="./result/bank/annotations",
         image_dir="./result/bank/images",
-        output_csv="ocr_dataset.csv"
+        output_csv="./csv/ocr_dataset.csv"
     )
